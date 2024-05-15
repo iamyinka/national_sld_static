@@ -29,3 +29,18 @@
   width: 100%;
   object-fit: cover;
 }
+
+/* Mover's dashboard */
+
+.user-img {
+  display: flex;
+  justify-content: center;
+}
+
+.user-img img {
+  max-width: 100%;
+  height: 10rem;
+  width: 10rem;
+  border-radius: 50%;
+  object-fit: cover;
+}
