@@ -12,13 +12,31 @@
   <link href="https://fonts.googleapis.com/css2?family=Lato&family=Open+Sans&family=Signika+Negative&display=swap"
     rel="stylesheet" />
   <link rel="stylesheet" href="../main.css" />
-  <style>
+  <!-- <style>
     input[type='file'] {
       font-size: 0;
     }
 
     ::file-selector-button {
       font-size: initial;
+    }
+  </style> -->
+  <style>
+    .image-preview {
+      display: flex;
+      flex-wrap: wrap;
+      margin-top: 20px;
+    }
+
+    .image-preview-item {
+      margin-right: 10px;
+      margin-bottom: 10px;
+    }
+
+    .image-preview-img {
+      width: 150px;
+      height: 150px;
+      object-fit: cover;
     }
   </style>
 </head>
@@ -81,7 +99,7 @@
           <div class="shipment_form">
             <h2>Shipment Form</h2>
 
-            <form action="./index.html">
+            <form action="./index.html" id="uploadForm" enctype="multipart/form-data">
               <select class="form-select mb-3" aria-label="Default select example">
                 <option selected>Select facility</option>
                 <option value="1">Facility 1</option>
@@ -108,11 +126,12 @@
                 <option value="3">Blood</option>
               </select>
 
-              <div class="container mt-5">
-                <div id="photoPlaceholder" class="border p-3 text-center" style="cursor: pointer;">
-                  <span>Click here to take a photo</span>
-                </div>
+              <div class="mb-3">
+                <label for="images" class="form-label">Select Images to Upload</label>
+                <input type="file" class="form-control" id="images" name="images[]" multiple accept="image/*">
               </div>
+
+              <div class="image-preview" id="imagePreview"></div>
 
               <!-- <div class="input-group mb-3">
                 <input type="file" class="form-control" id="inputGroupFile02">
@@ -181,34 +200,38 @@
 
   <script>
     document.addEventListener('DOMContentLoaded', function () {
-      const photoPlaceholder = document.getElementById('photoPlaceholder');
-      photoPlaceholder.addEventListener('click', function () {
-        // Create file input element
-        const fileInput = document.createElement('input');
-        fileInput.setAttribute('type', 'file');
-        fileInput.setAttribute('accept', 'image/*');
-        fileInput.setAttribute('capture', 'environment'); // Opens rear camera by default on mobile devices
-        fileInput.style.display = 'none'; // Hide the input element
+      const imagePreview = document.getElementById('imagePreview');
+      const uploadForm = document.getElementById('uploadForm');
 
-        // Trigger click on the file input element
-        fileInput.click();
+      uploadForm.addEventListener('change', function (event) {
+        const files = event.target.files;
 
-        // Handle onchange event when a photo is selected
-        fileInput.addEventListener('change', function () {
-          const file = fileInput.files[0];
-          const reader = new FileReader();
+        // Clear previous previews
+        imagePreview.innerHTML = '';
 
-          reader.onload = function (event) {
-            const imgSrc = event.target.result;
+        if (files) {
+          for (let i = 0; i < files.length; i++) {
+            const file = files[i];
+            const reader = new FileReader();
 
-            // Display the preview of the captured image in the placeholder div
-            photoPlaceholder.innerHTML = `<img src="${imgSrc}" class="img-fluid" alt="Captured photo">`;
+            reader.onload = function (event) {
+              const imgSrc = event.target.result;
 
-            // Here you can send the image to the server asynchronously if needed
-          };
+              // Create image preview element
+              const previewItem = document.createElement('div');
+              previewItem.classList.add('image-preview-item');
 
-          reader.readAsDataURL(file);
-        });
+              const img = document.createElement('img');
+              img.classList.add('image-preview-img');
+              img.src = imgSrc;
+
+              previewItem.appendChild(img);
+              imagePreview.appendChild(previewItem);
+            };
+
+            reader.readAsDataURL(file);
+          }
+        }
       });
     });
   </script>
